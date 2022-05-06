@@ -24,9 +24,9 @@ def lambda_handler(event, context):
 
 def start_code_pipeline(pipelineName):
     client = codepipeline_client()
-    print('staring pipeline {}',pipelineName)
+    print('starting pipeline ',pipelineName)
     response = client.start_pipeline_execution(name=pipelineName)
-    print('start_pipeline_execution response: {}',response)
+    print('start_pipeline_execution response ',response)
     return True
 
 cpclient = None
