@@ -6,4 +6,5 @@ phases:
   build:
     commands:
       # trigger the integration tests here
+      - cd projectA
       - echo 'Running integration tests'
