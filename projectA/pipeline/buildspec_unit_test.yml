@@ -6,5 +6,4 @@ phases:
   build:
     commands:
       # trigger the unit tests here
-      - cd projectA
       - echo 'Running unit tests'
