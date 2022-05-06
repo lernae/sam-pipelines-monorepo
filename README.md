@@ -48,18 +48,29 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
 
 ## Setup Mono repo pipeline trigger (deployed in ci/cd account) 
 
-```
-cd pipeline-trigger
-sam deploy --guided --profile cicd
-```
+1. Deploy the pipeline trigger
+   ```
+   cd pipeline-trigger
+   sam deploy --guided --profile cicd
+   ```
+1. Add webhook to your github repo (see "Creating a GitHub webhook" [this blog](https://aws.amazon.com/blogs/devops/integrate-github-monorepo-with-aws-codepipeline-to-run-project-specific-ci-cd-pipelines/) for more details making sure you selected `Content type` as `application/json` !!!)
 
 ## Use projectA example
 
-```
-cd projectA
-sam pipeline bootstrap
-sam deploy -t codepipeline.yaml --stack-name projectA-pipeline --capabilities=CAPABILITY_IAM --profile cicd
-```
+1. (optional) Deploy projectA to your dev account. This will deploy your workload infrastructure
+   ```
+   cd projectA
+   sam deploy --guided --profile dev
+   ```
+1. Deploy the pipeline
+   ```
+   cd projectA
+   sam pipeline bootstrap --profile cicd
+   sam deploy -t codepipeline.yaml --stack-name projectA-pipeline --capabilities=CAPABILITY_IAM --profile cicd
+   ```
+1. Activate the github connection
+1. push a new change modifying/creating anything in `projectA` 
+1. see it flow through the pipeline in CI/CD account
 
 ## Setup new subproject
 
