@@ -22,6 +22,7 @@ phases:
                     --region ${PROD_REGION}
                     --output-template-file packaged-prod.yaml
 artifacts:
+  base-directory: projectA
   files:
     - packaged-test.yaml
     - packaged-prod.yaml
