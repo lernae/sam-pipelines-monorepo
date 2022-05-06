@@ -84,4 +84,11 @@ sam deploy -t codepipeline.yaml --stack-name projectX-pipeline --capabilities=CA
 ```
 
 
+# TODOs
+
+- [ ] Improve doc around what needs to be edited (codepipeline.yaml vs. folder names, trust relation ship, disable change detection)
+- [ ] Test entire procedure
+- [ ] Automatically disable change detection in codepipeline
+- [ ] Fix trust relationship https://github.com/aws/aws-sam-cli/issues/3857
+- [ ] Add common pipeline example
 
