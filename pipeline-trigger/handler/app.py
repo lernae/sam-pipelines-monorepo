@@ -1,7 +1,9 @@
+import json
+
 def lambda_handler(event, context):
     print(event)
-    import json
-    modifiedFiles = event["commits"][0]["modified"]
+    githubEventPayload=json.loads(event['body'])
+    modifiedFiles = githubEventPayload["commits"][0]["modified"]
     #full path
     for filePath in modifiedFiles:
         # Extract folder name
@@ -10,7 +12,7 @@ def lambda_handler(event, context):
 
     #start the pipeline
     if len(folderName)>0:
-        # Codepipeline name is foldername-job. 
+        # Codepipeline name is foldername. 
         # We can read the configuration from S3 as well. 
         returnCode = start_code_pipeline(folderName)
 
@@ -22,7 +24,9 @@ def lambda_handler(event, context):
 
 def start_code_pipeline(pipelineName):
     client = codepipeline_client()
+    print('staring pipeline {}',pipelineName)
     response = client.start_pipeline_execution(name=pipelineName)
+    print('start_pipeline_execution response: {}',response)
     return True
 
 cpclient = None
