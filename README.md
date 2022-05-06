@@ -5,6 +5,7 @@
 
 This repo aims to provide a first implementation of  CI/CD pipelines for mono repo based on 
 * Github repo
+* Multi Accounts (CI/CD dedicated account, Staging account and Prod account)
 * [SAM pipelines](https://aws.amazon.com/blogs/compute/introducing-aws-sam-pipelines-automatically-generate-deployment-pipelines-for-serverless-applications/)
 * AWS CodePipeline, CodeBuild etc.
 * [Monorepo selective pipeline trigger](https://aws.amazon.com/blogs/devops/integrate-github-monorepo-with-aws-codepipeline-to-run-project-specific-ci-cd-pipelines/)
