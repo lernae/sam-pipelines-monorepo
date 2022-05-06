@@ -1,5 +1,5 @@
 def lambda_handler(event, context):
-
+    print(event)
     import json
     modifiedFiles = event["commits"][0]["modified"]
     #full path
