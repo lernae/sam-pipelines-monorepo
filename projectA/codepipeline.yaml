@@ -32,7 +32,7 @@ Parameters:
     Default: "GitHub"
   FullRepositoryId:
     Type: String
-    Default: "flochaz/sam-pipelines-monorepo "
+    Default: "flochaz/sam-pipelines-monorepo"
   MainGitBranch:
     Type: String
     Default: "main"
@@ -58,7 +58,7 @@ Parameters:
     Type: String
     # If there are functions with "Image" PackageType in your template,
     # Update the line below with image repository URL and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
-    # prod "sam package" and "sam deploy" commands in buildspec files (in pipeline/).
+    # prod "sam package" and "sam deploy" commands in buildspec files (in projectA/pipeline/).
     Default: ""
   ProdRegion:
     Type: String
@@ -79,7 +79,7 @@ Parameters:
     Type: String
     # If there are functions with "Image" PackageType in your template,
     # Update the line below with image repository URL and add "--image-repository ${PROD_IMAGE_REPOSITORY}" to
-    # prod "sam package" and "sam deploy" commands in buildspec files (in pipeline/).
+    # prod "sam package" and "sam deploy" commands in buildspec files (in projectA/pipeline/).
     Default: ""
   # CodeStarConnectionArn and FeatureGitBranch are required for pipelines for feature branches
   CodeStarConnectionArn:
@@ -549,7 +549,7 @@ Resources:
   #     ServiceRole: !GetAtt CodeBuildServiceRole.Arn
   #     Source:
   #       Type: CODEPIPELINE
-  #       BuildSpec: pipeline/buildspec_unit_test.yml
+  #       BuildSpec: projectA/pipeline/buildspec_unit_test.yml
 
   CodeBuildProjectBuildAndDeployFeature:
     Condition: IsFeatureBranchPipeline
@@ -580,7 +580,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspec_feature.yml
+        BuildSpec: projectA/pipeline/buildspec_feature.yml
 
   CodeBuildProjectBuildAndPackage:
     Condition: IsMainBranchPipeline
@@ -615,7 +615,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspec_build_package.yml
+        BuildSpec: projectA/pipeline/buildspec_build_package.yml
 
   # Uncomment and modify the following step for running the integration tests
   # CodeBuildProjectIntegrationTest:
@@ -631,7 +631,7 @@ Resources:
   #     ServiceRole: !GetAtt CodeBuildServiceRole.Arn
   #     Source:
   #       Type: CODEPIPELINE
-  #       BuildSpec: pipeline/buildspec_integration_test.yml
+  #       BuildSpec: projectA/pipeline/buildspec_integration_test.yml
 
   CodeBuildProjectDeploy:
     Condition: IsMainBranchPipeline
@@ -646,7 +646,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: pipeline/buildspec_deploy.yml
+        BuildSpec: projectA/pipeline/buildspec_deploy.yml
 Outputs:
   CodeStarConnectionArn:
     Condition: CreateConnection
