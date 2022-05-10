@@ -38,34 +38,34 @@ Parameters:
     Default: "main"
   SamTemplate:
     Type: String
-    Default: "template.yaml"
+    Default: "projectA/template.yaml"
   TestingRegion:
     Type: String
     Default: "eu-west-3"
   TestingStackName:
     Type: String
-    Default: "monorepo-projectA"
+    Default: "sam-app"
   TestingPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-staging-PipelineExecutionRole-1RLQ3LUL0D735"
+    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-1DLBUQ6UNNQX7"
   TestingCloudFormationExecutionRole:
     Type: String
-    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-stagi-CloudFormationExecutionR-15ND1R9OY4IIF"
+    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1BGDI9HEH35O"
   TestingArtifactBucket:
     Type: String
-    Default: "aws-sam-cli-managed-staging-pipel-artifactsbucket-16w0z0hkl4f1e"
+    Default: "aws-sam-cli-managed-test-pipeline-artifactsbucket-au1hjr2128bw"
   TestingImageRepository:
     Type: String
     # If there are functions with "Image" PackageType in your template,
     # Update the line below with image repository URL and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
-    # prod "sam package" and "sam deploy" commands in buildspec files (in projectA/pipeline/).
+    # prod "sam package" and "sam deploy" commands in buildspec files (in pipeline/).
     Default: ""
   ProdRegion:
     Type: String
     Default: "eu-west-3"
   ProdStackName:
     Type: String
-    Default: "monorepo-projectA"
+    Default: "sam-app"
   ProdPipelineExecutionRole:
     Type: String
     Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-125II9ETGPTND"
@@ -79,7 +79,7 @@ Parameters:
     Type: String
     # If there are functions with "Image" PackageType in your template,
     # Update the line below with image repository URL and add "--image-repository ${PROD_IMAGE_REPOSITORY}" to
-    # prod "sam package" and "sam deploy" commands in buildspec files (in projectA/pipeline/).
+    # prod "sam package" and "sam deploy" commands in buildspec files (in pipeline/).
     Default: ""
   # CodeStarConnectionArn and FeatureGitBranch are required for pipelines for feature branches
   CodeStarConnectionArn:
@@ -116,7 +116,6 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: 'projectA'
       ArtifactStore:
         Location: !Ref PipelineArtifactsBucket
         Type: S3
@@ -151,7 +150,7 @@ Resources:
                 RoleArn: !GetAtt PipelineStackCloudFormationExecutionRole.Arn
                 StackName: !Ref AWS::StackName
                 ChangeSetName: !Sub ${AWS::StackName}-ChangeSet
-                TemplatePath: SourceCodeAsZip::projectA/codepipeline.yaml
+                TemplatePath: SourceCodeAsZip::codepipeline.yaml
                 Capabilities: CAPABILITY_NAMED_IAM
                 ParameterOverrides: !Sub |
                   {
@@ -549,7 +548,7 @@ Resources:
   #     ServiceRole: !GetAtt CodeBuildServiceRole.Arn
   #     Source:
   #       Type: CODEPIPELINE
-  #       BuildSpec: projectA/pipeline/buildspec_unit_test.yml
+  #       BuildSpec: pipeline/buildspec_unit_test.yml
 
   CodeBuildProjectBuildAndDeployFeature:
     Condition: IsFeatureBranchPipeline
@@ -580,7 +579,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: projectA/pipeline/buildspec_feature.yml
+        BuildSpec: pipeline/buildspec_feature.yml
 
   CodeBuildProjectBuildAndPackage:
     Condition: IsMainBranchPipeline
@@ -615,7 +614,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: projectA/pipeline/buildspec_build_package.yml
+        BuildSpec: pipeline/buildspec_build_package.yml
 
   # Uncomment and modify the following step for running the integration tests
   # CodeBuildProjectIntegrationTest:
@@ -631,7 +630,7 @@ Resources:
   #     ServiceRole: !GetAtt CodeBuildServiceRole.Arn
   #     Source:
   #       Type: CODEPIPELINE
-  #       BuildSpec: projectA/pipeline/buildspec_integration_test.yml
+  #       BuildSpec: pipeline/buildspec_integration_test.yml
 
   CodeBuildProjectDeploy:
     Condition: IsMainBranchPipeline
