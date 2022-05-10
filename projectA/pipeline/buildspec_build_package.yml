@@ -4,6 +4,7 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
+      - cd projectA
       - pip install --upgrade pip
       - pip install --upgrade awscli aws-sam-cli
       # Enable docker https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker-custom-image.html
@@ -21,6 +22,7 @@ phases:
                     --region ${PROD_REGION}
                     --output-template-file packaged-prod.yaml
 artifacts:
+  base-directory: projectA
   files:
     - packaged-test.yaml
     - packaged-prod.yaml
