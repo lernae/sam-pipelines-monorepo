@@ -161,7 +161,7 @@ Resources:
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
                     "CodeStarConnectionArn": "${CodeStarConnectionArn}"
-                    "SubFolderName": "${SubFolderName}"
+                    "SubFolderName": "projectA"
                   }
               InputArtifacts:
                 - Name: SourceCodeAsZip
