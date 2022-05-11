@@ -39,7 +39,7 @@ Parameters:
     Default: "flochaz/sam-pipelines-monorepo"
   MainGitBranch:
     Type: String
-    Default: "common-pipeline"
+    Default: "main"
   SamTemplate:
     Type: String
     Default: "template.yaml"
