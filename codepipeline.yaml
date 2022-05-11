@@ -648,7 +648,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_deploy.yml
+        BuildSpec: pipeline/buildspec_deploy.yml
 Outputs:
   CodeStarConnectionArn:
     Condition: CreateConnection
