@@ -27,10 +27,6 @@ Description: >
 
 
 Parameters:
-  SubFolderName:
-    Type: String
-    Description: The sub project folder name
-    Default: "projectA"
   GitProviderType:
     Type: String
     Default: "GitHub"
@@ -120,7 +116,6 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: !Ref SubFolderName
       ArtifactStore:
         Location: !Ref PipelineArtifactsBucket
         Type: S3
@@ -139,7 +134,6 @@ Resources:
                 ConnectionArn: !If [CreateConnection, !Ref CodeStarConnection, !Ref CodeStarConnectionArn]
                 FullRepositoryId: !Ref FullRepositoryId
                 BranchName: !If [IsFeatureBranchPipeline, !Ref FeatureGitBranch, !Ref MainGitBranch]
-                DetectChanges: false
               OutputArtifacts:
                 - Name: SourceCodeAsZip
               RunOrder: 1
@@ -161,8 +155,7 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
-                    "CodeStarConnectionArn": "${CodeStarConnectionArn}",
-                    "SubFolderName": "${SubFolderName}"
+                    "CodeStarConnectionArn": "${CodeStarConnectionArn}"
                   }
               InputArtifacts:
                 - Name: SourceCodeAsZip
@@ -586,7 +579,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_feature.yml
+        BuildSpec: pipeline/buildspec_feature.yml
 
   CodeBuildProjectBuildAndPackage:
     Condition: IsMainBranchPipeline
@@ -621,7 +614,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_feature.yml
+        BuildSpec: pipeline/buildspec_build_package.yml
 
   # Uncomment and modify the following step for running the integration tests
   # CodeBuildProjectIntegrationTest:
