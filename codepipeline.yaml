@@ -29,7 +29,6 @@ Description: >
 Parameters:
   SubFolderName:
     Type: String
-    Default: 'projectA'
   GitProviderType:
     Type: String
     Default: "GitHub"
@@ -158,7 +157,8 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
-                    "CodeStarConnectionArn": "${CodeStarConnectionArn}"
+                    "CodeStarConnectionArn": "${CodeStarConnectionArn}",
+                    "SubFolderName": ${SubFolderName}
                   }
               InputArtifacts:
                 - Name: SourceCodeAsZip
