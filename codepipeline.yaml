@@ -27,6 +27,9 @@ Description: >
 
 
 Parameters:
+  SubFolderName:
+    Type: String
+    Description: The sub project folder name
   GitProviderType:
     Type: String
     Default: "GitHub"
@@ -41,19 +44,19 @@ Parameters:
     Default: "template.yaml"
   TestingRegion:
     Type: String
-    Default: "eu-west-3"
+    Default: "eu-west-2"
   TestingStackName:
     Type: String
     Default: "sam-app"
   TestingPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-1DLBUQ6UNNQX7"
+    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-10Q3R2PSJD8Z1"
   TestingCloudFormationExecutionRole:
     Type: String
-    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1BGDI9HEH35O"
+    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1GX95NEQU406B"
   TestingArtifactBucket:
     Type: String
-    Default: "aws-sam-cli-managed-test-pipeline-artifactsbucket-au1hjr2128bw"
+    Default: "aws-sam-cli-managed-test-pipeline-artifactsbucket-nup5nj1b9dfb"
   TestingImageRepository:
     Type: String
     # If there are functions with "Image" PackageType in your template,
@@ -62,19 +65,19 @@ Parameters:
     Default: ""
   ProdRegion:
     Type: String
-    Default: "eu-west-3"
+    Default: "eu-west-1"
   ProdStackName:
     Type: String
     Default: "sam-app"
   ProdPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-125II9ETGPTND"
+    Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-Y364KSM6UVRV"
   ProdCloudFormationExecutionExeRole:
     Type: String
-    Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-CloudFormationExecutionR-1X9T0LS7UEXZO"
+    Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-CloudFormationExecutionR-1VU2ZQCJIDV7W"
   ProdArtifactBucket:
     Type: String
-    Default: "aws-sam-cli-managed-prod-pipeline-artifactsbucket-204szu1b7wru"
+    Default: "aws-sam-cli-managed-prod-pipeline-artifactsbucket-1l6ytovke2ois"
   ProdImageRepository:
     Type: String
     # If there are functions with "Image" PackageType in your template,
@@ -116,6 +119,7 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
+      Name: !Ref SubFolderName
       ArtifactStore:
         Location: !Ref PipelineArtifactsBucket
         Type: S3
@@ -157,6 +161,7 @@ Resources:
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
                     "CodeStarConnectionArn": "${CodeStarConnectionArn}"
+                    "SubFolderName": "${SubFolderName}"
                   }
               InputArtifacts:
                 - Name: SourceCodeAsZip
@@ -580,7 +585,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: projectA/pipeline/buildspec_feature.yml
+        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_feature.yml
 
   CodeBuildProjectBuildAndPackage:
     Condition: IsMainBranchPipeline
@@ -615,7 +620,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
-        BuildSpec: projectA/pipeline/buildspec_feature.yml
+        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_feature.yml
 
   # Uncomment and modify the following step for running the integration tests
   # CodeBuildProjectIntegrationTest:
