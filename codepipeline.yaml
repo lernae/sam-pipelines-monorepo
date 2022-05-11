@@ -38,7 +38,7 @@ Parameters:
     Default: "common-pipeline"
   SamTemplate:
     Type: String
-    Default: "projectA/template.yaml"
+    Default: "template.yaml"
   TestingRegion:
     Type: String
     Default: "eu-west-3"
