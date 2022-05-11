@@ -11,18 +11,21 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
 * [Monorepo selective pipeline trigger](https://aws.amazon.com/blogs/devops/integrate-github-monorepo-with-aws-codepipeline-to-run-project-specific-ci-cd-pipelines/)
 
 Pipeline trigger high level view:
+
 ![mono repo trigger high level](https://d2908q01vomqb2.cloudfront.net/7719a1c782a1ba91c031a682a0a2f8658209adbf/2021/04/23/Codepipeline.jpg)
 
 Pipeline trigger lower level view:
+
 ![mono repo trigger flow](https://d2908q01vomqb2.cloudfront.net/7719a1c782a1ba91c031a682a0a2f8658209adbf/2021/04/23/Codepipeline-Sample-Arch.jpg)
 
 Multi accounts pipeline high level view:
+
 #TODO Add Multi account structure diagram with CI/CD account, staging and prod
 
 ## Components
 
 * `pipeline-trigger`: the implementation of this [blog post](https://aws.amazon.com/blogs/devops/integrate-github-monorepo-with-aws-codepipeline-to-run-project-specific-ci-cd-pipelines/) to be able to trigger the right pipeline based on what changed
-<!-- * `common-pipeline` an example on how you can potentially share the same pipeline config accross project -->
+* `common-pipeline` an example on how you can potentially share the same pipeline config accross project
 * `projectX`: the sub project folder containing the SAM app to deploy including it's pipeline (`codepipeline.yaml`, `pipeline/`, `.aws-sam/pipelineconfig.toml`), it's business logic code (`hello_world/`) and it's dependent infrastructure (`template.yaml`)
 
 
@@ -69,288 +72,118 @@ Multi accounts pipeline high level view:
 1. Bootstrap your accounts
    1. create a dummy user into CI/CD account (to work around https://github.com/aws/aws-sam-cli/issues/3857)
       ```bash
-      aws iam create-user --user-name "dummy-aws-sam-cli-user" --profile cicd
+      aws iam create-user --user-name "dummy-aws-sam-pipeline-user" --profile cicd
       ```
-   1. Bootstrap all accounts
+   1. Bootstrap your first stage account account: `test`
       ```bash
-      cd projectA
-      sam pipeline init --bootstrap
+      sam pipeline bootstrap --pipeline-user arn:aws:iam::<CICD ACCOUNT ID>:user/dummy-aws-sam-cli-user --stage test
       ```
+      Make sure to select the right profile to access this test account
+   1. Bootstrap your second stage account: `prod`
+      ```bash
+      sam pipeline bootstrap --pipeline-user arn:aws:iam::<CICD ACCOUNT ID>:user/dummy-aws-sam-cli-user --stage prod
       ```
-      sam pipeline init generates a pipeline configuration file that your CI/CD system
-      can use to deploy serverless applications using AWS SAM.
-      We will guide you through the process to bootstrap resources for each stage,
-      then walk through the details necessary for creating the pipeline config file.
-
-      Please ensure you are in the root folder of your SAM application before you begin.
-
-      Select a pipeline template to get started:
-            1 - AWS Quick Start Pipeline Templates
-            2 - Custom Pipeline Template Location
-      Choice: 1
-
-      Cloning from https://github.com/aws/aws-sam-cli-pipeline-init-templates.git (process may take a moment)
-      Select CI/CD system
-            1 - Jenkins
-            2 - GitLab CI/CD
-            3 - GitHub Actions
-            4 - Bitbucket Pipelines
-            5 - AWS CodePipeline
-      Choice: 5
-      You are using the 2-stage pipeline template.
-      _________    _________ 
-      |         |  |         |
-      | Stage 1 |->| Stage 2 |
-      |_________|  |_________|
-
-      Checking for existing stages...
-
-      [!] None detected in this account.
-
-      Do you want to go through stage setup process now? If you choose no, you can still reference other bootstrapped resources. [y/N]: y
-
-      For each stage, we will ask for [1] stage definition, [2] account details, and [3]
-      reference application build resources in order to bootstrap these pipeline
-      resources.
-
-      We recommend using an individual AWS account profiles for each stage in your
-      pipeline. You can set these profiles up using aws configure or ~/.aws/credentials. See
-      [https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-set-up-credentials.html].
-
-
-      Stage 1 Setup
-
-      [1] Stage definition
-      Enter a configuration name for this stage. This will be referenced later when you use the sam pipeline init command:
-      Stage configuration name: test
-
-      [2] Account details
-      The following AWS credential sources are available to use.
-      To know more about configuration AWS credentials, visit the link below:
-      https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html                
-            1 - Environment variables (not available)
-            2 - default (named profile)
-            3 - dev (named profile)
-            4 - test (named profile)
-            5 - prod (named profile)
-            6 - cicd (named profile)
-            q - Quit and configure AWS credentials
-      Select a credential source to associate with this stage: 4
-      Associated account <TEST ACCOUNT ID> with configuration test.
-
-      Enter the region in which you want these resources to be created [eu-west-3]: 
-      Enter the pipeline IAM user ARN if you have previously created one, or we will create one for you []: arn:aws:iam::<CICD ACCOUNT ID>:user/dummy-aws-sam-cli-user
-
-      [3] Reference application build resources
-      Enter the pipeline execution role ARN if you have previously created one, or we will create one for you []: 
-      Enter the CloudFormation execution role ARN if you have previously created one, or we will create one for you []: 
-      Please enter the artifact bucket ARN for your Lambda function. If you do not have a bucket, we will create one for you []: 
-      Does your application contain any IMAGE type Lambda functions? [y/N]: 
-
-      [4] Summary
-      Below is the summary of the answers:
-            1 - Account: <TEST ACCOUNT ID>
-            2 - Stage configuration name: test
-            3 - Region: eu-west-3
-            4 - Pipeline user ARN: arn:aws:iam::<CICD ACCOUNT ID>:user/dummy-aws-sam-cli-user
-            5 - Pipeline execution role: [to be created]
-            6 - CloudFormation execution role: [to be created]
-            7 - Artifacts bucket: [to be created]
-            8 - ECR image repository: [skipped]
-      Press enter to confirm the values above, or select an item to edit the value: 
-
-      This will create the following required resources for the 'test' configuration: 
-            - Pipeline execution role
-            - CloudFormation execution role
-            - Artifact bucket
-      Should we proceed with the creation? [y/N]: y
-      The following resources were created in your account:
-            - Pipeline execution role
-            - CloudFormation execution role
-            - Artifact bucket
-      View the definition in .aws-sam/pipeline/pipelineconfig.toml,
-      run sam pipeline bootstrap to generate another set of resources, or proceed to
-      sam pipeline init to create your pipeline configuration file.
-
-      Checking for existing stages...
-
-      Only 1 stage(s) were detected, fewer than what the template requires: 2.
-
-      Do you want to go through stage setup process now? If you choose no, you can still reference other bootstrapped resources. [y/N]: y
-
-      For each stage, we will ask for [1] stage definition, [2] account details, and [3]
-      reference application build resources in order to bootstrap these pipeline
-      resources.
-
-      We recommend using an individual AWS account profiles for each stage in your
-      pipeline. You can set these profiles up using aws configure or ~/.aws/credentials. See
-      [https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-set-up-credentials.html].
-
-
-      Stage 2 Setup
-
-      [1] Stage definition
-      Enter a configuration name for this stage. This will be referenced later when you use the sam pipeline init command:
-      Stage configuration name: prod
-
-      [2] Account details
-      The following AWS credential sources are available to use.
-      To know more about configuration AWS credentials, visit the link below:
-      https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html                
-            1 - Environment variables (not available)
-            2 - default (named profile)
-            3 - dev (named profile)
-            4 - test (named profile)
-            5 - prod (named profile)
-            6 - cicd (named profile)
-            q - Quit and configure AWS credentials
-      Select a credential source to associate with this stage: 5
-      Associated account <PROD ACCOUNT ID> with configuration prod.
-
-
-      Enter the region in which you want these resources to be created [eu-west-3]: 
-      Pipeline IAM user ARN: arn:aws:iam::<TEST ACCOUNT ID>:user/aws-sam-cli-managed-test-pipeline-res-PipelineUser-1K08W3GS4AA5Z
-
-      [3] Reference application build resources
-      Enter the pipeline execution role ARN if you have previously created one, or we will create one for you []: 
-      Enter the CloudFormation execution role ARN if you have previously created one, or we will create one for you []: 
-      Please enter the artifact bucket ARN for your Lambda function. If you do not have a bucket, we will create one for you []: 
-      Does your application contain any IMAGE type Lambda functions? [y/N]: 
-
-      [4] Summary
-      Below is the summary of the answers:
-            1 - Account: <PROD ACCOUNT ID>
-            2 - Stage configuration name: prod
-            3 - Region: eu-west-3
-            4 - Pipeline user ARN: arn:aws:iam::<TEST ACCOUNT ID>:user/aws-sam-cli-managed-test-pipeline-res-PipelineUser-1K08W3GS4AA5Z
-            5 - Pipeline execution role: [to be created]
-            6 - CloudFormation execution role: [to be created]
-            7 - Artifacts bucket: [to be created]
-            8 - ECR image repository: [skipped]
-      Press enter to confirm the values above, or select an item to edit the value: 
-
-      This will create the following required resources for the 'prod' configuration: 
-            - Pipeline execution role
-            - CloudFormation execution role
-            - Artifact bucket
-      Should we proceed with the creation? [y/N]: y
-      The following resources were created in your account:
-            - Pipeline execution role
-            - CloudFormation execution role
-            - Artifact bucket
-      View the definition in .aws-sam/pipeline/pipelineconfig.toml,
-      run sam pipeline bootstrap to generate another set of resources, or proceed to
-      sam pipeline init to create your pipeline configuration file.
-
-      Checking for existing stages...
-
-      What is the Git provider?
-            1 - Bitbucket
-            2 - CodeCommit
-            3 - GitHub
-            4 - GitHubEnterpriseServer
-      Choice []: 3
-      What is the full repository id (Example: some-user/my-repo)?: flochaz/sam-pipelines-monorepo
-      What is the Git branch used for production deployments? [main]: 
-      What is the template file path? [template.yaml]: projectA/template.yaml
-      We use the stage configuration name to automatically retrieve the bootstrapped resources created when you ran `sam pipeline bootstrap`.
-
-      Here are the stage configuration names detected in .aws-sam/pipeline/pipelineconfig.toml:
-            1 - test
-            2 - prod
-      Select an index or enter the stage 1's configuration name (as provided during the bootstrapping): 1
-      What is the sam application stack name for stage 1? [sam-app]: 
-      Stage 1 configured successfully, configuring stage 2.
-
-      Here are the stage configuration names detected in .aws-sam/pipeline/pipelineconfig.toml:
-            1 - test
-            2 - prod
-      Select an index or enter the stage 2's configuration name (as provided during the bootstrapping): 2
-      What is the sam application stack name for stage 2? [sam-app]: 
-      Stage 2 configured successfully.
-
-      To deploy this template and connect to the main git branch, run this against the leading account:
-      `sam deploy -t codepipeline.yaml --stack-name <stack-name> --capabilities=CAPABILITY_IAM`.
-      SUMMARY
-      We will generate a pipeline config file based on the following information:
-            What is the Git provider?: GitHub
-            What is the full repository id (Example: some-user/my-repo)?: flochaz/sam-pipelines-monorepo
-            What is the Git branch used for production deployments?: main
-            What is the template file path?: template.yaml
-            Select an index or enter the stage 1's configuration name (as provided during the bootstrapping): 1
-            What is the sam application stack name for stage 1?: sam-app
-            What is the pipeline execution role ARN for stage 1?: arn:aws:iam::<TEST ACCOUNT ID>:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-1DLBUQ6UNNQX7
-            What is the CloudFormation execution role ARN for stage 1?: arn:aws:iam::<TEST ACCOUNT ID>:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1BGDI9HEH35O
-            What is the S3 bucket name for artifacts for stage 1?: aws-sam-cli-managed-test-pipeline-artifactsbucket-au1hjr2128bw
-            What is the ECR repository URI for stage 1?: 
-            What is the AWS region for stage 1?: eu-west-3
-            Select an index or enter the stage 2's configuration name (as provided during the bootstrapping): 2
-            What is the sam application stack name for stage 2?: sam-app
-            What is the pipeline execution role ARN for stage 2?: arn:aws:iam::<PROD ACCOUNT ID>:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-125II9ETGPTND
-            What is the CloudFormation execution role ARN for stage 2?: arn:aws:iam::<PROD ACCOUNT ID>:role/aws-sam-cli-managed-prod-CloudFormationExecutionR-1X9T0LS7UEXZO
-            What is the S3 bucket name for artifacts for stage 2?: aws-sam-cli-managed-prod-pipeline-artifactsbucket-204szu1b7wru
-            What is the ECR repository URI for stage 2?: 
-            What is the AWS region for stage 2?: eu-west-3
-
-      Successfully created the pipeline configuration file(s):
-            - codepipeline.yaml
-            - assume-role.sh
-            - pipeline/buildspec_unit_test.yml
-            - pipeline/buildspec_build_package.yml
-            - pipeline/buildspec_integration_test.yml
-            - pipeline/buildspec_feature.yml
-            - pipeline/buildspec_deploy.yml
+      Make sure to select the right profile to access this test account
+   1. Create your pipeline infrastructure:
       ```
-      Here it's going to be important to properly use the value shown above:
-      * Question 1: ***1 - AWS Quick Start Pipeline Templates***
-      * Question 2: ***5 - AWS CodePipeline***
-      * Question 3: Stage configuration name: ***test***
-      * Question 4:  Account details: ***test (named profile)***
-      * Question 5: region ***UP TO YOU***
-      * Question 6: Enter the pipeline IAM user ARN if you have previously created one, or we will create one for you []: ***THE ARN OF THE DUMMY USER CREATED PREVIOUSLY !!!!!!***
-      * ... Same for Stage 2 with pros as name and prod named profile
+      sam pipeline init                                                                                                                   
+      ```
+      Make sure to select
+      * first ***"1 - AWS Quick Start Pipeline Templates"***
+      * then ***"5 - AWS CodePipeline"***
+
 1. Update your pipeline for Mono repo support:
-   1. Update `projectA/codepipeline.yaml`
-      1. Name your pipeline following sub project folder name (`projectA` here)
+   1. Update `codepipeline.yaml`
+      1. Add a cloudformation parameter to be able to adapt to your subprojects
+         ```diff
+         diff --git a/codepipeline.yaml b/codepipeline.yaml
+         index 24edac8..49d581d 100644
+         --- a/codepipeline.yaml
+         +++ b/codepipeline.yaml
+         @@ -27,12 +27,14 @@ Description: >
+         
+         
+         Parameters:
+         +  SubFolderName:
+         +    Type: String
+            GitProviderType:
+            Type: String
+            Default: "GitHub"
          ```
-         @@ -116,6 +116,7 @@ Resources:
+      1. Name your pipeline using this parameter
+         ```diff
+         @@ -116,6 +118,7 @@ Resources:
             Pipeline:
             Type: AWS::CodePipeline::Pipeline
             Properties:
-         +      Name: 'projectA'
+         +      Name: !Sub ${SubFolderName}
                ArtifactStore:
                   Location: !Ref PipelineArtifactsBucket
                   Type: S3
+         @@ -155,7 +159,8 @@ Resources:
+                        ParameterOverrides: !Sub |
+                           {
+                              "FeatureGitBranch": "${FeatureGitBranch}",
+         -                    "CodeStarConnectionArn": "${CodeStarConnectionArn}"
+         +                    "CodeStarConnectionArn": "${CodeStarConnectionArn}",
+         +                    "SubFolderName": "${SubFolderName}"
+                           }
+                        InputArtifacts:
+                        - Name: SourceCodeAsZip
          ```
-      1. Update pipeline cloudformation template location:
-         ```
-         @@ -150,7 +151,7 @@ Resources:
-                        RoleArn: !GetAtt PipelineStackCloudFormationExecutionRole.Arn
-                        StackName: !Ref AWS::StackName
-                        ChangeSetName: !Sub ${AWS::StackName}-ChangeSet
-         -                TemplatePath: SourceCodeAsZip::codepipeline.yaml
-         +                TemplatePath: SourceCodeAsZip::projectA/codepipeline.yaml
-                        Capabilities: CAPABILITY_NAMED_IAM
+      1. Disable auto build on code change since we are delegating this logic to pipeline-trigger
+         ```diff
+         @@ -134,6 +137,7 @@ Resources:
+                        ConnectionArn: !If [CreateConnection, !Ref CodeStarConnection, !Ref CodeStarConnectionArn]
+                        FullRepositoryId: !Ref FullRepositoryId
+                        BranchName: !If [IsFeatureBranchPipeline, !Ref FeatureGitBranch, !Ref MainGitBranch]
+         +                DetectChanges: false
          ```
       1. Update buildspec locations:
-         ```
-         @@ -579,7 +580,7 @@ Resources:
+         ```diff
+         @@ -548,7 +552,7 @@ Resources:
+            #     ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+            #     Source:
+            #       Type: CODEPIPELINE
+         -  #       BuildSpec: pipeline/buildspec_unit_test.yml
+         +  #       BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_unit_test.yml
+         
+            CodeBuildProjectBuildAndDeployFeature:
+            Condition: IsFeatureBranchPipeline
+         @@ -579,7 +583,7 @@ Resources:
                ServiceRole: !GetAtt CodeBuildServiceRole.Arn
                Source:
                   Type: CODEPIPELINE
          -        BuildSpec: pipeline/buildspec_feature.yml
-         +        BuildSpec: projectA/pipeline/buildspec_feature.yml
-         ```
-         ```
-         @@ -614,7 +615,7 @@ Resources:
+         +        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_feature.yml
+         
+            CodeBuildProjectBuildAndPackage:
+            Condition: IsMainBranchPipeline
+         @@ -614,7 +618,7 @@ Resources:
                ServiceRole: !GetAtt CodeBuildServiceRole.Arn
                Source:
                   Type: CODEPIPELINE
          -        BuildSpec: pipeline/buildspec_build_package.yml
-         +        BuildSpec: projectA/pipeline/buildspec_build_package.yml
+         +        BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_build_package.yml
+         
+            # Uncomment and modify the following step for running the integration tests
+            # CodeBuildProjectIntegrationTest:
+         @@ -630,7 +634,7 @@ Resources:
+            #     ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+            #     Source:
+            #       Type: CODEPIPELINE
+         -  #       BuildSpec: pipeline/buildspec_integration_test.yml
+         +  #       BuildSpec: !Sub ${SubFolderName}/pipeline/buildspec_integration_test.yml
+         
+            CodeBuildProjectDeploy:
+            Condition: IsMainBranchPipeline
          ```
-   1. Update buildspec to work in the right folder
+   1. Move buildspecs to your project folder
       ```
+      mv pipeline projectA/pipeline
+      ```
+   1. Update buildspec to work in the right folder
+      ```diff
       diff --git a/projectA/pipeline/buildspec_build_package.yml b/projectA/pipeline/buildspec_build_package.yml
       index 537d1d9..bfa6e18 100644
       --- a/projectA/pipeline/buildspec_build_package.yml
@@ -379,7 +212,7 @@ Multi accounts pipeline high level view:
       ```
 1. Deploy the pipeline
    ```
-   sam deploy -t codepipeline.yaml --stack-name projectA-pipeline --capabilities=CAPABILITY_IAM --profile cicd
+   PROJECT_SUB_FOLDER_NAME=projectA sam deploy -t codepipeline.yaml --stack-name ${PROJECT_SUB_FOLDER_NAME}-pipeline  --parameter-overrides "SubFolderName=${PROJECT_SUB_FOLDER_NAME}" --capabilities=CAPABILITY_IAM --profile cicd
    ```
 1. Activate the github connection
    1. Go to your CI/CD account console
@@ -401,7 +234,9 @@ sam deploy -t codepipeline.yaml --stack-name projectX-pipeline --capabilities=CA
 
 # TODOs
 
+- [ ] Improve doc around what needs to be edited (codepipeline.yaml vs. folder names, trust relation ship, disable change detection)
 - [ ] Test entire procedure
 - [ ] Automatically disable change detection in codepipeline
+- [ ] Fix trust relationship https://github.com/aws/aws-sam-cli/issues/3857
 - [ ] Add common pipeline example
 

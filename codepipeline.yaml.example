@@ -49,10 +49,10 @@ Parameters:
     Default: "sam-app"
   TestingPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-10Q3R2PSJD8Z1"
+    Default: "arn:aws:iam::<TEST ACCOUNT ID>:role/aws-sam-cli-managed-test-pip-PipelineExecutionRole-10Q3R2PSJD8Z1"
   TestingCloudFormationExecutionRole:
     Type: String
-    Default: "arn:aws:iam::354087173127:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1GX95NEQU406B"
+    Default: "arn:aws:iam::<TEST ACCOUNT ID>:role/aws-sam-cli-managed-test-CloudFormationExecutionR-1GX95NEQU406B"
   TestingArtifactBucket:
     Type: String
     Default: "aws-sam-cli-managed-test-pipeline-artifactsbucket-nup5nj1b9dfb"
@@ -70,10 +70,10 @@ Parameters:
     Default: "sam-app"
   ProdPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-Y364KSM6UVRV"
+    Default: "arn:aws:iam::<PROD ACCOUNT ID>:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-Y364KSM6UVRV"
   ProdCloudFormationExecutionExeRole:
     Type: String
-    Default: "arn:aws:iam::670535138659:role/aws-sam-cli-managed-prod-CloudFormationExecutionR-1VU2ZQCJIDV7W"
+    Default: "arn:aws:iam::<PROD ACCOUNT ID>:role/aws-sam-cli-managed-prod-CloudFormationExecutionR-1VU2ZQCJIDV7W"
   ProdArtifactBucket:
     Type: String
     Default: "aws-sam-cli-managed-prod-pipeline-artifactsbucket-1l6ytovke2ois"
