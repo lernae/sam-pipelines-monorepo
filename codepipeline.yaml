@@ -161,7 +161,7 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
-                    "CodeStarConnectionArn": "${CodeStarConnectionArn}"
+                    "CodeStarConnectionArn": "${CodeStarConnectionArn}",
                     "SubFolderName": "${SubFolderName}"
                   }
               InputArtifacts:
