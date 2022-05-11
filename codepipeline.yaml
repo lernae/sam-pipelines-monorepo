@@ -30,6 +30,7 @@ Parameters:
   SubFolderName:
     Type: String
     Description: The sub project folder name
+    Default: "projectA"
   GitProviderType:
     Type: String
     Default: "GitHub"
@@ -161,7 +162,7 @@ Resources:
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
                     "CodeStarConnectionArn": "${CodeStarConnectionArn}"
-                    "SubFolderName": "projectA"
+                    "SubFolderName": "${SubFolderName}"
                   }
               InputArtifacts:
                 - Name: SourceCodeAsZip
