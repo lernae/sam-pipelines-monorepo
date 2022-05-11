@@ -10,10 +10,13 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
 * AWS CodePipeline, CodeBuild etc.
 * [Monorepo selective pipeline trigger](https://aws.amazon.com/blogs/devops/integrate-github-monorepo-with-aws-codepipeline-to-run-project-specific-ci-cd-pipelines/)
 
+Pipeline trigger high level view:
 ![mono repo trigger high level](https://d2908q01vomqb2.cloudfront.net/7719a1c782a1ba91c031a682a0a2f8658209adbf/2021/04/23/Codepipeline.jpg)
 
+Pipeline trigger lower level view:
 ![mono repo trigger flow](https://d2908q01vomqb2.cloudfront.net/7719a1c782a1ba91c031a682a0a2f8658209adbf/2021/04/23/Codepipeline-Sample-Arch.jpg)
 
+Multi accounts pipeline high level view:
 #TODO Add Multi account structure diagram with CI/CD account, staging and prod
 
 ## Components
@@ -398,9 +401,7 @@ sam deploy -t codepipeline.yaml --stack-name projectX-pipeline --capabilities=CA
 
 # TODOs
 
-- [ ] Improve doc around what needs to be edited (codepipeline.yaml vs. folder names, trust relation ship, disable change detection)
 - [ ] Test entire procedure
 - [ ] Automatically disable change detection in codepipeline
-- [ ] Fix trust relationship https://github.com/aws/aws-sam-cli/issues/3857
 - [ ] Add common pipeline example
 
