@@ -35,7 +35,7 @@ Parameters:
     Default: "lernae/sam-pipelines-monorepo"
   MainGitBranch:
     Type: String
-    Default: "main"
+    Default: "common-pipeline"
   SamTemplate:
     Type: String
     Default: "template.yaml"
