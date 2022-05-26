@@ -305,7 +305,7 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
       * Question 5: region ***UP TO YOU***
       * Question 6: Enter the pipeline IAM user ARN if you have previously created one, or we will create one for you []: ***THE ARN OF THE DUMMY USER CREATED PREVIOUSLY !!!!!!***
       * ... Same for Stage 2 with prod as name and prod named profile
-1. Update your pipeline for Mono repo support:
+1. Update your pipeline for Mono repo support
    1. Update `projectA/codepipeline.yaml`
       1. Name your pipeline following sub project folder name (`projectA` here)
          ```
