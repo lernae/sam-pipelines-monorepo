@@ -68,9 +68,8 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
       ```bash
       aws iam create-user --user-name "dummy-aws-sam-cli-user" --profile cicd
       ```
-   1. Bootstrap all accounts
+   1. Bootstrap cicd accounts
       ```bash
-      cd projectA
       sam pipeline init --bootstrap
       ```
       ```
@@ -249,7 +248,7 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
       Choice []: 3
       What is the full repository id (Example: some-user/my-repo)?: flochaz/sam-pipelines-monorepo
       What is the Git branch used for production deployments? [main]: 
-      What is the template file path? [template.yaml]: projectA/template.yaml
+      What is the template file path? [template.yaml]: template.yaml
       We use the stage configuration name to automatically retrieve the bootstrapped resources created when you ran `sam pipeline bootstrap`.
 
       Here are the stage configuration names detected in .aws-sam/pipeline/pipelineconfig.toml:
@@ -305,7 +304,7 @@ This repo aims to provide a first implementation of  CI/CD pipelines for mono re
       * Question 4:  Account details: ***test (named profile)***
       * Question 5: region ***UP TO YOU***
       * Question 6: Enter the pipeline IAM user ARN if you have previously created one, or we will create one for you []: ***THE ARN OF THE DUMMY USER CREATED PREVIOUSLY !!!!!!***
-      * ... Same for Stage 2 with pros as name and prod named profile
+      * ... Same for Stage 2 with prod as name and prod named profile
 1. Update your pipeline for Mono repo support:
    1. Update `projectA/codepipeline.yaml`
       1. Name your pipeline following sub project folder name (`projectA` here)
