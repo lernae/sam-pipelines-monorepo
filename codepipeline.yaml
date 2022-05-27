@@ -27,6 +27,10 @@ Description: >
 
 
 Parameters:
+  SubFolderName:
+    Type: String
+    Description: The sub project folder name
+    Default: "projectA"
   GitProviderType:
     Type: String
     Default: "GitHub"
@@ -155,7 +159,8 @@ Resources:
                 ParameterOverrides: !Sub |
                   {
                     "FeatureGitBranch": "${FeatureGitBranch}",
-                    "CodeStarConnectionArn": "${CodeStarConnectionArn}"
+                    "CodeStarConnectionArn": "${CodeStarConnectionArn}",
+                    "SubFolderName": "${SubFolderName}"
                   }
               InputArtifacts:
                 - Name: SourceCodeAsZip
@@ -576,6 +581,8 @@ Resources:
             Value: !Ref TestingImageRepository
           - Name: FEATURE_BRANCH_NAME
             Value: !Ref FeatureGitBranch
+          - Name: SUB_FOLDER_NAME
+            Value: !Ref SubFolderName
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: CODEPIPELINE
